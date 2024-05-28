@@ -1,42 +1,30 @@
 import java.util.*;
 
-public class DijkstraSearch<V> extends Search<V> {
+public class BreadthFirstSearch<V> extends Search<V> {
 
-    public DijkstraSearch(WeightedGraph<V> graph, Vertex<V> start) {
+    public BreadthFirstSearch(WeightedGraph<V> graph, Vertex<V> start) {
         super(graph, start);
     }
 
     @Override
     public void execute() {
-        Map<Vertex<V>, Double> distances = new HashMap<>();
-        Map<Vertex<V>, Vertex<V>> previousVertices = new HashMap<>();
-        PriorityQueue<Vertex<V>> queue = new PriorityQueue<>(Comparator.comparing(distances::get));
+        Set<Vertex<V>> visited = new HashSet<>();
+        Queue<Vertex<V>> queue = new LinkedList<>();
 
-        for (Vertex<V> vertex : graph.getVertices()) {
-            if (vertex.equals(start)) {
-                distances.put(vertex, 0.0);
-            } else {
-                distances.put(vertex, Double.MAX_VALUE);
-            }
-            queue.add(vertex);
-        }
+        queue.add(start);
+        visited.add(start);
 
         while (!queue.isEmpty()) {
             Vertex<V> current = queue.poll();
+            System.out.println(current.getData());
 
             for (Edge<V> edge : graph.getEdges(current)) {
                 Vertex<V> neighbor = edge.getDest();
-                double newDist = distances.get(current) + edge.getWeight();
-                if (newDist < distances.get(neighbor)) {
-                    distances.put(neighbor, newDist);
-                    previousVertices.put(neighbor, current);
+                if (!visited.contains(neighbor)) {
                     queue.add(neighbor);
+                    visited.add(neighbor);
                 }
             }
-        }
-
-        for (Map.Entry<Vertex<V>, Double> entry : distances.entrySet()) {
-            System.out.println("Distance to " + entry.getKey().getData() + " is " + entry.getValue());
         }
     }
 }
